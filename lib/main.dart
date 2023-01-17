@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:kp_chat/chat.dart';
+import 'package:kp_chat/chat_screen.dart';
 
 void main(List<String> args) {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
