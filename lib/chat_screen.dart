@@ -50,15 +50,15 @@ class _MyChatState extends State<MyChat> {
     } else {
       var errorCode = response.statusCode.toString();
       Fluttertoast.showToast(
-          msg: "Error code: +$errorCode",
+          msg: "Error code: $errorCode",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.deepOrange,
           textColor: Colors.white,
           fontSize: 16.0);
 
-      return '0';
+      return 'Error';
     }
   }
 
@@ -107,6 +107,7 @@ class _MyChatState extends State<MyChat> {
                   ),
                   FloatingActionButton(
                     onPressed: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
                       setState(() {
                         _messages.add(MessageModel(
                           text: _inputTextController.text,
