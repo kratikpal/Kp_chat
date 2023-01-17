@@ -49,16 +49,7 @@ class _MyChatState extends State<MyChat> {
       return msg;
     } else {
       var errorCode = response.statusCode.toString();
-      Fluttertoast.showToast(
-          msg: "Error code: $errorCode",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.deepOrange,
-          textColor: Colors.white,
-          fontSize: 16.0);
-
-      return 'Error';
+      return 'Error $errorCode';
     }
   }
 
@@ -103,38 +94,58 @@ class _MyChatState extends State<MyChat> {
                     ),
                   ),
                   const SizedBox(
-                    width: 15,
+                    width: 10,
                   ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      setState(() {
-                        _messages.add(MessageModel(
-                          text: _inputTextController.text,
-                          messageType: MessageType.user,
-                        ));
-                        isLoading = true;
-                      });
-                      var question = _inputTextController.text;
-                      _inputTextController.clear();
-                      _getAnswer(question).then((value) {
-                        setState(() {
-                          isLoading = false;
-                          _messages.add(MessageModel(
-                            text: value,
-                            messageType: MessageType.api,
-                          ));
-                        });
-                      });
-                    },
-                    elevation: 0,
-                    child: const Icon(
-                      Icons.send,
-                      color: Colors.white,
-                      size: 18,
+                  Visibility(
+                    visible: !isLoading,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        if (_inputTextController.text.isEmpty) {
+                          Fluttertoast.showToast(
+                              msg: "Enter some text",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.deepOrange,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        } else {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          setState(() {
+                            _messages.add(MessageModel(
+                              text: _inputTextController.text,
+                              messageType: MessageType.user,
+                            ));
+                            isLoading = true;
+                          });
+                          var question = _inputTextController.text;
+                          _inputTextController.clear();
+                          _getAnswer(question).then((value) {
+                            setState(() {
+                              isLoading = false;
+                              _messages.add(MessageModel(
+                                text: value,
+                                messageType: MessageType.api,
+                              ));
+                            });
+                          });
+                        }
+                      },
+                      elevation: 0,
+                      child: const Icon(
+                        Icons.send,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     ),
                   ),
                 ],
+              ),
+              const Text(
+                "Made by Kratikpal",
+                style: TextStyle(
+                  fontSize: 12,
+                ),
               ),
             ],
           ),
