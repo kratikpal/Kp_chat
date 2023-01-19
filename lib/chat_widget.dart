@@ -27,12 +27,21 @@ class MyChatWidget extends StatelessWidget {
       color: messageType == MessageType.user
           ? Colors.deepOrange
           : const Color.fromARGB(220, 10, 3, 78),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 15,
-        ),
+      child: TweenAnimationBuilder<int>(
+        builder: (BuildContext context, int value, child) {
+          return SelectableText(
+            text.substring(0, value),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+            ),
+          );
+        },
+        tween: IntTween(begin: 0, end: text.length),
+        duration: Duration(
+            seconds: messageType == MessageType.user
+                ? 0
+                : (text.length / 20).round()),
       ),
     );
   }

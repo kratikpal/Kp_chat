@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -19,8 +20,12 @@ class _MyChatState extends State<MyChat> {
   final List<MessageModel> _messages = [];
   late bool isLoading;
 
+  void _scrollDown() {
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  }
+
   Future<String> _getAnswer(String question) async {
-    String apiKey = "API Key";
+    String apiKey = "Api key";
     String url = "https://api.openai.com/v1/completions";
 
     Map<String, String> header = {
@@ -32,10 +37,10 @@ class _MyChatState extends State<MyChat> {
       Uri.parse(url),
       headers: header,
       body: jsonEncode({
-        "model": "text-ada-001",
+        "model": "text-davinci-003",
         "prompt": question,
         "temperature": 0,
-        "max_tokens": 10,
+        "max_tokens": 5,
         "top_p": 1,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
@@ -43,13 +48,12 @@ class _MyChatState extends State<MyChat> {
       }),
     );
 
+    var data = jsonDecode(response.body.toString());
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body.toString());
-      var msg = data['choices'][0]['text'];
-      return msg;
+      return data['choices'][0]['text'];
     } else {
-      var errorCode = response.statusCode.toString();
-      return 'Error $errorCode';
+      var error = data['error'];
+      return error!["message"];
     }
   }
 
@@ -117,6 +121,7 @@ class _MyChatState extends State<MyChat> {
                               messageType: MessageType.user,
                             ));
                             isLoading = true;
+                            _scrollDown();
                           });
                           var question = _inputTextController.text;
                           _inputTextController.clear();
@@ -127,6 +132,9 @@ class _MyChatState extends State<MyChat> {
                                 text: value,
                                 messageType: MessageType.api,
                               ));
+                            });
+                            Timer(const Duration(milliseconds: 50), () {
+                              _scrollDown();
                             });
                           });
                         }
