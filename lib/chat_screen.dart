@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -66,13 +67,16 @@ class _MyChatState extends State<MyChat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Chat")),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+      body: Stack(fit: StackFit.expand, children: [
+        ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 20),
+          child: Image.asset(
+            "assets/images/4954390_2599646.jpg",
+            fit: BoxFit.fill,
+          ),
+        ),
+        SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               Expanded(
                   child: ListView.builder(
@@ -86,23 +90,25 @@ class _MyChatState extends State<MyChat> {
                   );
                 },
               )),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: TextFormField(
-                      controller: _inputTextController,
-                      decoration: const InputDecoration(
-                        labelText: 'Ask Anything',
-                        border: OutlineInputBorder(),
+              Padding(
+                padding: const EdgeInsets.only(left: 4, right: 4, top: 4),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextFormField(
+                        controller: _inputTextController,
+                        decoration: InputDecoration(
+                          labelText: 'Ask Anything',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Visibility(
-                    visible: !isLoading,
-                    child: FloatingActionButton(
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    FloatingActionButton(
                       onPressed: () {
                         if (_inputTextController.text.isEmpty) {
                           Fluttertoast.showToast(
@@ -140,14 +146,16 @@ class _MyChatState extends State<MyChat> {
                         }
                       },
                       elevation: 0,
-                      child: const Icon(
-                        Icons.send,
-                        color: Colors.white,
-                        size: 18,
-                      ),
+                      child: isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Icon(
+                              Icons.send,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const Text(
                 "Made by Kratikpal",
@@ -158,7 +166,7 @@ class _MyChatState extends State<MyChat> {
             ],
           ),
         ),
-      ),
+      ]),
     );
   }
 }
