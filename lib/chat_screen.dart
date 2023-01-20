@@ -26,7 +26,7 @@ class _MyChatState extends State<MyChat> {
   }
 
   Future<String> _getAnswer(String question) async {
-    String apiKey = "Api key";
+    String apiKey = "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";
     String url = "https://api.openai.com/v1/completions";
 
     Map<String, String> header = {
@@ -41,7 +41,7 @@ class _MyChatState extends State<MyChat> {
         "model": "text-davinci-003",
         "prompt": question,
         "temperature": 0,
-        "max_tokens": 5,
+        "max_tokens": 200,
         "top_p": 1,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
@@ -139,7 +139,7 @@ class _MyChatState extends State<MyChat> {
                                 messageType: MessageType.api,
                               ));
                             });
-                            Timer(const Duration(milliseconds: 50), () {
+                            Timer(const Duration(milliseconds: 500), () {
                               _scrollDown();
                             });
                           });
