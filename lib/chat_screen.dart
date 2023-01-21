@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kp_chat/chat_model.dart';
-import 'package:kp_chat/chat_widget.dart';
+import 'package:kp_chat/widgets/chat_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:kp_chat/widgets/drawer_widget.dart';
 
 class MyChat extends StatefulWidget {
   const MyChat({super.key});
@@ -20,13 +23,33 @@ class _MyChatState extends State<MyChat> {
   final ScrollController _scrollController = ScrollController();
   final List<MessageModel> _messages = [];
   late bool isLoading;
+  bool isConnected = false;
+  final Connectivity _connectivity = Connectivity();
 
   void _scrollDown() {
     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
   }
 
+  Future<void> _checkConnectivity() async {
+    var connectionResult = await _connectivity.checkConnectivity();
+    if (connectionResult == ConnectivityResult.none) {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.scale,
+        title: 'No Internet Connection',
+        desc: 'Please connect to internet and try again...',
+        btnOkOnPress: () => _checkConnectivity(),
+      ).show();
+      setState(() => isConnected = false);
+    } else {
+      setState(() => isConnected = true);
+    }
+  }
+
+  // Api call
   Future<String> _getAnswer(String question) async {
-    String apiKey = "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";
+    String apiKey = "Api Key";
     String url = "https://api.openai.com/v1/completions";
 
     Map<String, String> header = {
@@ -41,7 +64,7 @@ class _MyChatState extends State<MyChat> {
         "model": "text-davinci-003",
         "prompt": question,
         "temperature": 0,
-        "max_tokens": 200,
+        "max_tokens": 20,
         "top_p": 1,
         "frequency_penalty": 0.0,
         "presence_penalty": 0.0,
@@ -62,11 +85,46 @@ class _MyChatState extends State<MyChat> {
   void initState() {
     super.initState();
     isLoading = false;
+    _checkConnectivity();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Builder(builder: (context) {
+          return IconButton(
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              icon: const Icon(Icons.menu));
+        }),
+        actions: [
+          IconButton(
+            onPressed: () {
+              AwesomeDialog(
+                context: context,
+                dialogType: DialogType.warning,
+                animType: AnimType.scale,
+                title: 'Delete Conversation',
+                desc: 'Are you sure to delete conversation permanently...',
+                btnOkOnPress: () {
+                  if (_messages.isNotEmpty) {
+                    _messages.clear();
+                    setState(() {});
+                  }
+                },
+                btnCancelOnPress: () {},
+              ).show();
+            },
+            icon: const Icon(Icons.delete_outline_rounded),
+          )
+        ],
+      ),
+      drawer: const MyAppDrawer(),
       body: Stack(fit: StackFit.expand, children: [
         ImageFiltered(
           imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 20),
@@ -109,40 +167,44 @@ class _MyChatState extends State<MyChat> {
                       width: 10,
                     ),
                     FloatingActionButton(
-                      onPressed: () {
-                        if (_inputTextController.text.isEmpty) {
-                          Fluttertoast.showToast(
-                              msg: "Enter some text",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.deepOrange,
-                              textColor: Colors.white,
-                              fontSize: 16.0);
-                        } else {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          setState(() {
-                            _messages.add(MessageModel(
-                              text: _inputTextController.text,
-                              messageType: MessageType.user,
-                            ));
-                            isLoading = true;
-                            _scrollDown();
-                          });
-                          var question = _inputTextController.text;
-                          _inputTextController.clear();
-                          _getAnswer(question).then((value) {
+                      onPressed: () async {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        await _checkConnectivity();
+                        if (isConnected) {
+                          if (_inputTextController.text.isEmpty) {
+                            Fluttertoast.showToast(
+                                msg: "Enter some text",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.deepOrange,
+                                textColor: Colors.white,
+                                fontSize: 16.0);
+                          } else if (isLoading) {
+                          } else {
                             setState(() {
-                              isLoading = false;
                               _messages.add(MessageModel(
-                                text: value,
-                                messageType: MessageType.api,
+                                text: _inputTextController.text,
+                                messageType: MessageType.user,
                               ));
-                            });
-                            Timer(const Duration(milliseconds: 500), () {
+                              isLoading = true;
                               _scrollDown();
                             });
-                          });
+                            var question = _inputTextController.text;
+                            _inputTextController.clear();
+                            _getAnswer(question).then((value) {
+                              setState(() {
+                                isLoading = false;
+                                _messages.add(MessageModel(
+                                  text: value,
+                                  messageType: MessageType.api,
+                                ));
+                              });
+                              Timer(const Duration(seconds: 3), () {
+                                _scrollDown();
+                              });
+                            });
+                          }
                         }
                       },
                       elevation: 0,
