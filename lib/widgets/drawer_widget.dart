@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kp_chat/image_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyAppDrawer extends StatelessWidget {
@@ -69,7 +70,23 @@ class MyAppDrawer extends StatelessWidget {
                 Navigator.pop(context);
                 _launchUrl();
               },
-            )
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.image_search_rounded,
+                color: Colors.black,
+              ),
+              title: const Text("Image generator"),
+              onTap: (() {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (builder) => const MyImageScreen(),
+                  ),
+                );
+              }),
+            ),
           ],
         ),
       ),

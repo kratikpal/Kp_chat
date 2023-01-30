@@ -42,6 +42,9 @@ dependencies:
   connectivity_plus: ^3.0.2
   awesome_dialog: ^3.0.2
   url_launcher: ^6.1.8
+  gallery_saver: ^2.3.2
+  image_gallery_saver: ^1.7.1
+  dio: ^4.0.6
 
 dev_dependencies:
   flutter_test:

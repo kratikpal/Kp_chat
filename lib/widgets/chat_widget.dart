@@ -1,6 +1,6 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:kp_chat/chat_model.dart';
+import 'package:kp_chat/models/chat_model.dart';
 
 class MyChatWidget extends StatelessWidget {
   const MyChatWidget({
