@@ -49,7 +49,7 @@ class _MyChatState extends State<MyChat> {
 
   // Api call
   Future<String> _getAnswer(String question) async {
-    String apiKey = "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";
+    String apiKey = "Api key";
     String url = "https://api.openai.com/v1/completions";
 
     Map<String, String> header = {
@@ -140,100 +140,98 @@ class _MyChatState extends State<MyChat> {
             fit: BoxFit.fill,
           ),
         ),
-        SafeArea(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                  child: ListView.builder(
-                itemCount: _messages.length,
-                controller: _scrollController,
-                itemBuilder: (context, index) {
-                  var message = _messages[index];
-                  return MyChatWidget(
-                    text: message.text,
-                    messageType: message.messageType,
-                  );
-                },
-              )),
-              Padding(
-                padding: const EdgeInsets.only(left: 4, right: 4, top: 4),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextFormField(
-                        controller: _inputTextController,
-                        decoration: InputDecoration(
-                          labelText: 'Ask Anything',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+        Column(
+          children: <Widget>[
+            Expanded(
+                child: ListView.builder(
+              itemCount: _messages.length,
+              controller: _scrollController,
+              itemBuilder: (context, index) {
+                var message = _messages[index];
+                return MyChatWidget(
+                  text: message.text,
+                  messageType: message.messageType,
+                );
+              },
+            )),
+            Padding(
+              padding: const EdgeInsets.only(left: 4, right: 4, top: 4),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextFormField(
+                      controller: _inputTextController,
+                      decoration: InputDecoration(
+                        labelText: 'Ask Anything',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    FloatingActionButton(
-                      onPressed: () async {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        await _checkConnectivity();
-                        if (isConnected) {
-                          if (_inputTextController.text.isEmpty) {
-                            Fluttertoast.showToast(
-                                msg: "Enter some text",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.deepOrange,
-                                textColor: Colors.white,
-                                fontSize: 16.0);
-                          } else if (isLoading) {
-                          } else {
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  FloatingActionButton(
+                    onPressed: () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      await _checkConnectivity();
+                      if (isConnected) {
+                        if (_inputTextController.text.isEmpty) {
+                          Fluttertoast.showToast(
+                              msg: "Enter some text",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.white,
+                              textColor: Colors.black,
+                              fontSize: 16.0);
+                        } else if (isLoading) {
+                        } else {
+                          setState(() {
+                            _messages.add(MessageModel(
+                              text: _inputTextController.text,
+                              messageType: MessageType.user,
+                            ));
+                            isLoading = true;
+                            _scrollDown();
+                          });
+                          var question = _inputTextController.text;
+                          _inputTextController.clear();
+                          _getAnswer(question).then((value) {
                             setState(() {
+                              isLoading = false;
                               _messages.add(MessageModel(
-                                text: _inputTextController.text,
-                                messageType: MessageType.user,
+                                text: value,
+                                messageType: MessageType.api,
                               ));
-                              isLoading = true;
+                            });
+                            Timer(const Duration(seconds: 3), () {
                               _scrollDown();
                             });
-                            var question = _inputTextController.text;
-                            _inputTextController.clear();
-                            _getAnswer(question).then((value) {
-                              setState(() {
-                                isLoading = false;
-                                _messages.add(MessageModel(
-                                  text: value,
-                                  messageType: MessageType.api,
-                                ));
-                              });
-                              Timer(const Duration(seconds: 3), () {
-                                _scrollDown();
-                              });
-                            });
-                          }
+                          });
                         }
-                      },
-                      elevation: 0,
-                      child: isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Icon(
-                              Icons.send,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                    ),
-                  ],
-                ),
+                      }
+                    },
+                    elevation: 0,
+                    child: isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Icon(
+                            Icons.send,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                  ),
+                ],
               ),
-              const Text(
-                "Made by Kratikpal",
-                style: TextStyle(
-                  fontSize: 12,
-                ),
+            ),
+            const Text(
+              "Made by Kratikpal",
+              style: TextStyle(
+                fontSize: 12,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ]),
     );

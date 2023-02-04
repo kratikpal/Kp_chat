@@ -59,13 +59,13 @@ class _MyImageScreenState extends State<MyImageScreen> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.deepOrange,
-        textColor: Colors.white,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
         fontSize: 16.0);
   }
 
   Future<String> _getImage(String question) async {
-    String apiKey = "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";
+    String apiKey = "Api Key";
     String url = "https://api.openai.com/v1/images/generations";
 
     Map<String, String> header = {
@@ -120,10 +120,6 @@ class _MyImageScreenState extends State<MyImageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: Stack(fit: StackFit.expand, children: [
         ImageFiltered(
           imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 20),
@@ -164,8 +160,8 @@ class _MyImageScreenState extends State<MyImageScreen> {
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                                 timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.deepOrange,
-                                textColor: Colors.white,
+                                backgroundColor: Colors.white,
+                                textColor: Colors.black,
                                 fontSize: 16.0);
                           } else {
                             setState(() => isLoading = true);
@@ -224,7 +220,7 @@ class _MyImageScreenState extends State<MyImageScreen> {
                         ),
                         Visibility(
                           visible: imageUrl.isNotEmpty,
-                          child: FloatingActionButton(
+                          child: FloatingActionButton.extended(
                             onPressed: () async {
                               if (await Permission.storage
                                   .request()
@@ -243,11 +239,16 @@ class _MyImageScreenState extends State<MyImageScreen> {
                                 ).show();
                               }
                             },
-                            child: isSaving
+                            label: isSaving
+                                ? const Text("Saving to Gallery")
+                                : const Text(
+                                    "Save to Gallery",
+                                  ),
+                            icon: isSaving
                                 ? const CircularProgressIndicator(
                                     color: Colors.white,
                                   )
-                                : const Icon(Icons.download),
+                                : const Icon(Icons.save_rounded),
                           ),
                         )
                       ],

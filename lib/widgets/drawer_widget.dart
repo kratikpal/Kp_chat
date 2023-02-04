@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:kp_chat/image_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyAppDrawer extends StatelessWidget {
   const MyAppDrawer({super.key});
 
-  Future<void> _launchUrl() async {
-    await launchUrl(Uri.parse("https://github.com/kratikpal/Kp_chat"));
+  Future<void> _launchUrl(int value) async {
+    if (value == 1) {
+      await launchUrl(Uri.parse("https://github.com/kratikpal/Kp_chat"));
+    } else {
+      await launchUrl(Uri.parse(
+          "https://github.com/kratikpal/Privacy-Policy/blob/main/privacy%20_policy.md"));
+    }
   }
 
   @override
@@ -25,10 +29,11 @@ class MyAppDrawer extends StatelessWidget {
               child: Container(
                 height: 150,
                 decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(
-                            "assets/images/photo-1520250497591-112f2f40a3f4.avif"),
-                        fit: BoxFit.cover)),
+                  image: DecorationImage(
+                      image: AssetImage(
+                          "assets/images/photo-1520250497591-112f2f40a3f4.avif"),
+                      fit: BoxFit.cover),
+                ),
                 child: Column(
                   children: const <Widget>[
                     Padding(
@@ -68,25 +73,20 @@ class MyAppDrawer extends StatelessWidget {
               title: const Text("GitHub"),
               onTap: () {
                 Navigator.pop(context);
-                _launchUrl();
+                _launchUrl(1);
               },
             ),
+            const Divider(),
             ListTile(
-              leading: const Icon(
-                Icons.image_search_rounded,
-                color: Colors.black,
-              ),
-              title: const Text("Image generator"),
-              onTap: (() {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (builder) => const MyImageScreen(),
-                  ),
-                );
-              }),
-            ),
+                leading: const Icon(
+                  Icons.privacy_tip,
+                  color: Colors.black,
+                ),
+                title: const Text("Privacy Policy"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _launchUrl(2);
+                })
           ],
         ),
       ),
