@@ -1,4 +1,4 @@
-package com.example.kp_chat
+package com.kratikpal.askit
 
 import io.flutter.embedding.android.FlutterActivity
 

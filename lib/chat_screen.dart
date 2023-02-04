@@ -49,7 +49,7 @@ class _MyChatState extends State<MyChat> {
 
   // Api call
   Future<String> _getAnswer(String question) async {
-    String apiKey = "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";
+    String apiKey = "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";
     String url = "https://api.openai.com/v1/completions";
 
     Map<String, String> header = {

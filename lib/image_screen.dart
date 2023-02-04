@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MyImageScreen extends StatefulWidget {
   const MyImageScreen({super.key});
@@ -64,7 +65,7 @@ class _MyImageScreenState extends State<MyImageScreen> {
   }
 
   Future<String> _getImage(String question) async {
-    String apiKey = "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";
+    String apiKey = "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";
     String url = "https://api.openai.com/v1/images/generations";
 
     Map<String, String> header = {
@@ -224,9 +225,23 @@ class _MyImageScreenState extends State<MyImageScreen> {
                         Visibility(
                           visible: imageUrl.isNotEmpty,
                           child: FloatingActionButton(
-                            onPressed: () {
-                              setState(() => isSaving = true);
-                              _save();
+                            onPressed: () async {
+                              if (await Permission.storage
+                                  .request()
+                                  .isGranted) {
+                                setState(() => isSaving = true);
+                                _save();
+                              } else {
+                                AwesomeDialog(
+                                  context: context,
+                                  dialogType: DialogType.error,
+                                  animType: AnimType.scale,
+                                  title: 'Open Settings',
+                                  desc: "Storage permission is not granted",
+                                  btnOkOnPress: () => openAppSettings(),
+                                  btnCancelOnPress: () {},
+                                ).show();
+                              }
                             },
                             child: isSaving
                                 ? const CircularProgressIndicator(
