@@ -6,6 +6,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kp_chat/models/chat_model.dart';
 import 'package:kp_chat/widgets/chat_widget.dart';
 import 'package:http/http.dart' as http;
@@ -25,6 +26,16 @@ class _MyChatState extends State<MyChat> {
   late bool isLoading;
   bool isConnected = false;
   final Connectivity _connectivity = Connectivity();
+  final BannerAd myBanner = BannerAd(
+    adUnitId: "Banner_ad_unit_id",
+    size: AdSize.banner,
+    request: const AdRequest(),
+    listener: const BannerAdListener(),
+  );
+
+  final BannerAdListener myBannerAdListener = BannerAdListener(
+    onAdFailedToLoad: (ad, error) => ad.dispose(),
+  );
 
   void _scrollDown() {
     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -49,7 +60,7 @@ class _MyChatState extends State<MyChat> {
 
   // Api call
   Future<String> _getAnswer(String question) async {
-    String apiKey = "Api key";
+    String apiKey = "ApiKey";
     String url = "https://api.openai.com/v1/completions";
 
     Map<String, String> header = {
@@ -86,6 +97,7 @@ class _MyChatState extends State<MyChat> {
     super.initState();
     isLoading = false;
     _checkConnectivity();
+    myBanner.load();
   }
 
   @override
@@ -143,17 +155,23 @@ class _MyChatState extends State<MyChat> {
         Column(
           children: <Widget>[
             Expanded(
-                child: ListView.builder(
-              itemCount: _messages.length,
-              controller: _scrollController,
-              itemBuilder: (context, index) {
-                var message = _messages[index];
-                return MyChatWidget(
-                  text: message.text,
-                  messageType: message.messageType,
-                );
-              },
-            )),
+              child: ListView.builder(
+                itemCount: _messages.length,
+                controller: _scrollController,
+                itemBuilder: (context, index) {
+                  var message = _messages[index];
+                  return MyChatWidget(
+                    text: message.text,
+                    messageType: message.messageType,
+                  );
+                },
+              ),
+            ),
+            SizedBox(
+              width: myBanner.size.width.toDouble(),
+              height: myBanner.size.height.toDouble(),
+              child: AdWidget(ad: myBanner),
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 4, right: 4, top: 4),
               child: Row(
@@ -205,9 +223,6 @@ class _MyChatState extends State<MyChat> {
                                 text: value,
                                 messageType: MessageType.api,
                               ));
-                            });
-                            Timer(const Duration(seconds: 3), () {
-                              _scrollDown();
                             });
                           });
                         }

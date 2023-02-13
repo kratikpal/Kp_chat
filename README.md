@@ -6,7 +6,7 @@ In addition to answering questions, Askit also features a unique image generatio
 
 ## How to Use
 
-- [Download](https://drive.google.com/file/d/1Jbu-12As71jEeyLXbmjdmk42oSMz_NEI/view?usp=sharing) and install the apk
+- [Download](https://play.google.com/store/apps/details?id=com.kratikpal.askit) the app from Google PlayStore.
 - Open Askit and ask a question. The Question-Answer Bot will provide you with an answer in real-time.
 - To use the Image Generation Tool, go to image Generation screen and enter the desired text and select your preferred style and color. Askit will then generate a custom image for you to use.
 
