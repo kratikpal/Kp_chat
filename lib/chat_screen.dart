@@ -61,7 +61,7 @@ class _MyChatState extends State<MyChat> {
   // Api call
   Future<String> _getAnswer(String question) async {
     String apiKey = "ApiKey";
-    String url = "https://api.openai.com/v1/completions";
+    String url = "https://api.openai.com/v1/chat/completions";
 
     Map<String, String> header = {
       'Content-Type': 'application/json',
@@ -72,20 +72,17 @@ class _MyChatState extends State<MyChat> {
       Uri.parse(url),
       headers: header,
       body: jsonEncode({
-        "model": "text-davinci-003",
-        "prompt": question,
-        "temperature": 0,
-        "max_tokens": 200,
-        "top_p": 1,
-        "frequency_penalty": 0.0,
-        "presence_penalty": 0.0,
-        "stop": ["Human:", "AI:"],
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {"role": "user", "content": question}
+        ],
+        "max_tokens": 500,
       }),
     );
 
     var data = jsonDecode(response.body.toString());
     if (response.statusCode == 200) {
-      return data['choices'][0]['text'];
+      return data["choices"][0]["message"]["content"];
     } else {
       var error = data['error'];
       return error!["message"];
