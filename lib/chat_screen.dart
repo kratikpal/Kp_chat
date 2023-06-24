@@ -6,7 +6,6 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kp_chat/models/chat_model.dart';
 import 'package:kp_chat/widgets/chat_widget.dart';
 import 'package:http/http.dart' as http;
@@ -26,16 +25,6 @@ class _MyChatState extends State<MyChat> {
   late bool isLoading;
   bool isConnected = false;
   final Connectivity _connectivity = Connectivity();
-  final BannerAd myBanner = BannerAd(
-    adUnitId: "Banner_ad_unit_id",
-    size: AdSize.banner,
-    request: const AdRequest(),
-    listener: const BannerAdListener(),
-  );
-
-  final BannerAdListener myBannerAdListener = BannerAdListener(
-    onAdFailedToLoad: (ad, error) => ad.dispose(),
-  );
 
   void _scrollDown() {
     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -60,7 +49,7 @@ class _MyChatState extends State<MyChat> {
 
   // Api call
   Future<String> _getAnswer(String question) async {
-    String apiKey = "ApiKey";
+    String apiKey = "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";
     String url = "https://api.openai.com/v1/chat/completions";
 
     Map<String, String> header = {
@@ -94,7 +83,6 @@ class _MyChatState extends State<MyChat> {
     super.initState();
     isLoading = false;
     _checkConnectivity();
-    myBanner.load();
   }
 
   @override
@@ -163,11 +151,6 @@ class _MyChatState extends State<MyChat> {
                   );
                 },
               ),
-            ),
-            SizedBox(
-              width: myBanner.size.width.toDouble(),
-              height: myBanner.size.height.toDouble(),
-              child: AdWidget(ad: myBanner),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 4, right: 4, top: 4),
